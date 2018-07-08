@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+</head>
+<body>
+	<h2 align="center">项目上传页</h2>
+	<table width="100%" border=1>
+		<form id="infoform" action="/item/add.do" method="post"
+			enctype="multipart/form-data">
+			<tr>
+				<td align="left">项目名称<input type="text" name="item.itemName"></td>
+			</tr>
+			<tr>
+				<td align="left">项目类型<select>
+						<option value="-1" selected="selected">----请选择-----
+						<option value="0">房地产
+						<option value="1">道路
+						<option value="2">园林
+				</select>
+				</td>
+			</tr>
+			<tr>
+				<td align="left">建设单位<input type="text" name="item.companyName"></td>
+			</tr>
+			<tr>
+				<td align="left">项目所在地<input type="text"
+					name="item.itemPosition"></td>
+			</tr>
+			<tr>
+				<td align="left">项目详情<input type="text"
+					name="item.itemIntroduce"></td>
+			</tr>
+			<tr>
+				<td align="left">附件一：项目报告<input onchange="updateli()"
+					type="file" id="file" name="uploadFiles" multiple="multiple" >
+					<script type="text/javascript">
+						function updateli() {
+							var ul = document.getElementById('filelist');
+							ul.innerHTML="";
+							//console.info(document.getElementById("file").files);
+							var filess = document.getElementById("file").files;
+							//console.info(filess);
+							for ( var file in filess) {
+								//console.info(filess[file].name);
+								if (undefined !== filess[file].name
+										&& null !== filess[file].name
+										&& '' !== filess[file].name
+										&& 'item' !== filess[file].name) {
+									//创建元素Li
+									var li = document.createElement("li");
+									
+									//alert(filess[file].type);
+									//向li中添加内容
+									li.innerHTML = filess[file].name;
+									//向ul追加元素li
+									ul.appendChild(li);
+
+								}
+
+							}
+						}
+					</script>
+					<button type="button" onclick="uploadFile()">上传</button> <!--执行上传操作  -->
+					<script type="text/javascript">
+						function uploadFile() {
+							//先判断是否有文件可以上传
+							var filee = document.getElementById("file");
+							//console.info(filee.files[0]);
+							if(filee.files.length == 0){
+								alert("请添加上传文件");
+								return;
+							}
+							
+							
+							var flag = confirm("文件上传越小，费用越低，您确定上传吗?")
+							if(flag){
+								//先激活提交按钮
+								var submitbutton = document.getElementById("submitbutton");
+								submitbutton.removeAttribute("disabled");
+								
+								var formData = new FormData();
+								// 向formData中添加数据:
+								var filee = document.getElementById("file");
+								//console.info(filee.files[0]);
+								if(filee.files.length == 0){
+									alert("请上传文件");
+									return;
+								}
+								for(var i = 0; i < filee.files.length; i++){
+									//alert(filee.files[i]);
+									formData.append("files", filee.files[i]);
+									
+								}
+								
+								var request = new XMLHttpRequest();
+								request.open("POST","http://localhost:9501/upload/uploadFile.do");
+								request.send(formData);
+
+								request.onload = function() {
+									if (request.status == 200) {
+										alert("文件上传成功");
+									}else{
+										alert("上传失败，请稍后确认");
+									}
+								}
+							}
+							 
+						}
+					</script>
+				</td>
+			</tr>
+		<tr>
+			<td>
+				<ul id="filelist">
+					<!-- <li><input type="hidden" name="filename" value="123">
+						<a href="http://www.baidu.com">百度</a></li> -->
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align="left"><input id="submitbutton" type="button" onclick="formsubmit()"  value="提交" disabled="false">
+				<script type="text/javascript">
+					function formsubmit(){
+						var flag = confirm("请您仔细核实信息，一旦提交，项目名称、建设单位信息将不能修改，确认提交吗?");
+						if(flag){
+							var infoform = document.getElementById("infoform");
+							infoform.submit();
+						}
+					}
+				</script>
+			</td>
+		</tr>
+		</form>
+		
+	</table>
+</body>
+</html>
